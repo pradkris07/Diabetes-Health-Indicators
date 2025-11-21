@@ -1,0 +1,24 @@
+-------------------------Setting up project structure---------------------------
+
+1. Create repo, clone it in local
+2. Create a virtual environment named 'atlas' - conda create -n atlas python=3.10
+3. Activate the virtual environment - conda activate atlas
+4. pip install cookiecutter
+5. cookiecutter -c v1 https://github.com/drivendata/cookiecutter-data-science
+6. Rename src.models -> src.model
+7. git add - commit - push
+
+-------------------------Setup MLFlow on Dagshub---------------------------
+8. Go to: https://dagshub.com/dashboard
+9. Create > New Repo > Connect a repo > (Github) Connect > Select your repo > Connect
+10. Copy experiment tracking url and code snippet. (Also try: Go To MLFlow UI)
+
+https://dagshub.com/pradkris07/Diabetes-Health-Indicators.mlflow
+
+import dagshub
+dagshub.init(repo_owner='pradkris07', repo_name='Diabetes-Health-Indicators', mlflow=True)
+
+import mlflow
+with mlflow.start_run():
+  mlflow.log_param('parameter name', 'value')
+  mlflow.log_metric('metric name', 1)

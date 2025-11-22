@@ -1,9 +1,10 @@
 -------------------------Setting up project structure---------------------------
 
 1. Create repo, clone it in local
-2. Create a virtual environment named 'atlas' - conda create -n atlas python=3.10
-3. Activate the virtual environment - conda activate atlas
-4. pip install cookiecutter
+2. Run "uv init" to initialize the virtual environment.
+3) Run "uv add cookiecutter scikit-learn dagshub mlflow" to add the dependencies to the virtual environment. There might be many more. 
+   Add whenever you face issue
+4) Run "uv pip instsll -e ." to add the local packages to the environment.
 5. cookiecutter -c v1 https://github.com/drivendata/cookiecutter-data-science
 6. Rename src.models -> src.model
 7. git add - commit - push

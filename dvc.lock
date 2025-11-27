@@ -1,0 +1,53 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data/data_ingestion.py
+    deps:
+    - path: src/data/data_ingestion.py
+      hash: md5
+      md5: 557ced0d7a8cc5580e7bebf702bade7c
+      size: 3974
+    outs:
+    - path: data/external
+      hash: md5
+      md5: 1aa6ba4eb3e6e9930e2af1a48397b4f4.dir
+      size: 6418263
+      nfiles: 1
+    - path: data/raw
+      hash: md5
+      md5: e49879e71a351609a694247cb5407341.dir
+      size: 6416203
+      nfiles: 2
+  data_validation:
+    cmd: python src/data/data_validation.py
+    deps:
+    - path: src/data/data_validation.py
+      hash: md5
+      md5: 31c4337a7b58ce99b06b19de9ebe556d
+      size: 6075
+    outs:
+    - path: data/report
+      hash: md5
+      md5: 4ba551774453953856cf8ab1f9f099bf.dir
+      size: 55
+      nfiles: 1
+  data_transformation:
+    cmd: python src/data/data_transformation.py
+    deps:
+    - path: src/data/data_transformation.py
+      hash: md5
+      md5: 505f4b6c414057c0497819f1c7c5c399
+      size: 7898
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 48192c642ddffd75cf54a3eaeb78ace5.dir
+      size: 4662496
+      nfiles: 2
+  model_building:
+    cmd: python src/model/model_trainer.py
+    deps:
+    - path: src/model/model_trainer.py
+      hash: md5
+      md5: a81089db349e577562bb1b3293c19715
+      size: 13991

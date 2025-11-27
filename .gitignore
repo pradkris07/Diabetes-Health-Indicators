@@ -27,6 +27,8 @@ share/python-wheels/
 MANIFEST
 .env
 zipfiles/
+data/
+logs/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

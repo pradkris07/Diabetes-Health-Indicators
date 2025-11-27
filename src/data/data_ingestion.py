@@ -49,6 +49,33 @@ def load_data(data_url: str, data_path: str) -> pd.DataFrame:
         logging.error('Unexpected error occurred while loading the data: %s', e)
         raise
 
+def extract_sample(data_frame):
+    """
+    Reads a CSV file, randomly selects n rows, saves them as a sample file,
+    and removes those rows from the original file.
+    """
+    try:
+
+        # If file has fewer rows than sample size, adjust automatically
+        n = min(SAMPLE_SIZE, len(data_frame))
+
+        # Randomly sample n rows
+        sample_df = data_frame.sample(n=n, random_state=RANDOM_STATE)
+
+        # Save sample to file
+        sample_df.to_csv(os.path.join(DATA_PATH, SAMPLE_FILENAME), index=False)
+
+        # Remove sampled rows from main df
+        df_remaining = data_frame.drop(sample_df.index)
+        print(f"Sample of {n} rows saved to '{os.path.join(DATA_PATH, SAMPLE_FILENAME)}'.")
+        print(f"Remaining {len(df_remaining)} rows saved back.")
+
+        # Save updated main file
+        return df_remaining
+        
+    except Exception as e:
+        logging.error('Unexpected error occurred while extracting the data: %s', e)
+        raise 
 
 def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str) -> None:
     """Save the train and test datasets."""
@@ -64,12 +91,10 @@ def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str)
 
 def main():
     try:
-        params = load_params(params_path='params.yaml')
-        test_size = params['data_ingestion']['test_size']
-        # test_size = 0.2
         
         df = load_data(data_url=DATA_URL, data_path=DATA_PATH)
-        train_data, test_data = train_test_split(df, test_size=test_size, random_state=RANDOM_STATE)
+        df_remaining = extract_sample(df)
+        train_data, test_data = train_test_split(df_remaining, test_size=TEST_SIZE, random_state=RANDOM_STATE)
         save_data(train_data, test_data, data_path=DATA_PATH)
     except Exception as e:
         logging.error('Failed to complete the data ingestion process: %s', e)

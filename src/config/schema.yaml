@@ -1,0 +1,56 @@
+columns:
+  - Diabetes_binary: int
+  - HighBP: int
+  - HighChol: int
+  - CholCheck: int
+  - BMI: int
+  - Smoker: int
+  - Stroke: int
+  - HeartDiseaseorAttack: int
+  - PhysActivity: int
+  - Fruits: int
+  - Veggies: int
+  - HvyAlcoholConsump: int
+  - AnyHealthcare: int
+  - NoDocbcCost: int
+  - GenHlth: int
+  - MentHlth: int
+  - PhysHlth: int
+  - DiffWalk: int
+  - Sex: int
+  - Age: int
+  - Education: int
+  - Income: int
+
+binary_columns:
+  - Diabetes_binary
+  - HighBP
+  - HighChol
+  - CholCheck
+  - Smoker
+  - Stroke
+  - HeartDiseaseorAttack
+  - PhysActivity
+  - Fruits
+  - Veggies
+  - HvyAlcoholConsump
+  - AnyHealthcare
+  - NoDocbcCost
+  - DiffWalk
+  - Sex
+  
+numerical_columns:
+  - Age
+  - BMI
+  - Education
+  - GenHlth
+  - Income
+  - MentHlth
+  - PhysHlth
+
+# for data transformation
+outliers:
+  - BMI
+  - PhysHlth
+  - MentHlth
+

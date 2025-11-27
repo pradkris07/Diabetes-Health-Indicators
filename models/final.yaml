@@ -1,0 +1,6 @@
+- null
+- accuracy: 0.95494
+  estimator: GradientBoostingClassifier
+  learning_rate: 0.2
+  max_depth: 9
+  n_estimators: 200

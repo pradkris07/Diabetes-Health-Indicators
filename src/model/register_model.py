@@ -74,12 +74,12 @@ def register_model(model_name: str, model_info: dict):
         model_version = mlflow.register_model(model_uri, model_name)
         
         # Transition the model to "Staging" stage
-        client = mlflow.tracking.MlflowClient()
-        client.transition_model_version_stage(
-            name=model_name,
-            version=model_version.version,
-            stage="Staging"
-        )
+        #client = mlflow.tracking.MlflowClient()
+        #client.transition_model_version_stage(
+        #    name=model_name,
+        #    version=model_version.version,
+        #    stage="Production"
+        #)
         
         logging.debug(f'Model {model_name} version {model_version.version} registered and transitioned to Staging.')
     except Exception as e:
@@ -94,9 +94,14 @@ def main():
             if model_name == GDB_ESTIMATOR:
                 model_info_path = GDB_INFO_PATH
                 model_info = load_model_info(model_info_path)
-        
-        model_name = "GDB_model"
-        register_model(model_name, model_info)
+                print(model_info)
+                model_name = GDB_MODEL_PATH.split('\\')[1].split('.')[0]
+                register_model(model_name, model_info)
+            elif model_name == RFC_ESTIMATOR:
+                model_info_path = RFC_INFO_PATH
+                model_info = load_model_info(model_info_path)
+                model_name = RFC_MODEL_PATH.split('\\')[1].split('.')[0]
+                register_model(model_name, model_info)
     except Exception as e:
         logging.error('Failed to complete the model registration process: %s', e)
         print(f"Error: {e}")

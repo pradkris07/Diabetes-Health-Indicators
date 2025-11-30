@@ -51,16 +51,13 @@ def create_final_model_yaml(mod_yaml: dict, params: dict,  score):
 
         # If file doesn't have a list yet, create one
         if not isinstance(data, list):
-            data = [data]
+            data = []
             data.append({
                     "estimator": mod_yaml['estimator'],
-                    "n_estimators": params['n_estimators'],
-                    "max_depth": params['max_depth'],
-                    "learning_rate": params['learning_rate'],
+                    "best parameters": params,
                     "accuracy": score
                 })
         else:
-            print(data)
             existing_estimators = {entry.get("estimator") for entry in data}
 
             # Append new dictionary
@@ -74,17 +71,13 @@ def create_final_model_yaml(mod_yaml: dict, params: dict,  score):
                     data = [existing for existing in data if existing.get("estimator") != mod_yaml["estimator"]]
                     data.append({
                         "estimator": mod_yaml['estimator'],
-                        "n_estimators": params['n_estimators'],
-                        "max_depth": params['max_depth'],
-                        "learning_rate": params['learning_rate'],
+                        "best parameters": params,
                         "accuracy": score
                     })
             else:
                 data.append({
                     "estimator": mod_yaml['estimator'],
-                    "n_estimators": params['n_estimators'],
-                    "max_depth": params['max_depth'],
-                    "learning_rate": params['learning_rate'],
+                    "best parameters": params,
                     "accuracy": score
                 })
 
@@ -99,6 +92,7 @@ def save_object(file_path: str, obj: object) -> None:
     logging.info("Entered the save_object method")
 
     try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "wb") as file_obj:
             dill.dump(obj, file_obj)
 
@@ -124,6 +118,7 @@ def load_numpy_array_data(file_path: str) -> np.array:
 def save_metrics(metrics: dict, file_path: str) -> None:
     """Save the evaluation metrics to a JSON file."""
     try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w') as file:
             json.dump(metrics, file, indent=4)
         logging.info('Metrics saved to %s', file_path)
@@ -221,6 +216,125 @@ def get_model_and_report_gdb(model_yaml:  dict, train: np.array, test: np.array)
         print(f"Error: {e}")
         raise
 
+def get_model_and_report_rfc(model_yaml:  dict, train: np.array, test: np.array):
+    try:
+        logging.info("Training Random Forest Classifier with specified parameters")
+        
+        # Splitting the train and test data into features and target variables
+        x_train, y_train, x_test, y_test = train[:, :-1], train[:, -1], test[:, :-1], test[:, -1]
+        logging.info("train-test split done")
+        
+        n_estimators = model_yaml['hyperparameter']['n_estimators']
+        max_depth = model_yaml['hyperparameter']['max_depth']
+        min_samples_split = model_yaml['hyperparameter']['min_samples_split']
+        max_features = model_yaml['hyperparameter']['max_features']
+        
+        param_distributions = {'n_estimators': n_estimators,
+                               'max_depth': max_depth,
+                               'min_samples_split': min_samples_split,
+                               'max_features': max_features
+                               }
+        #print( n_estimators, max_depth, learning_rate)
+        # Randomized Search instead of Grid Search
+        clf = RandomForestClassifier(random_state=RANDOM_STATE)
+        random_search = RandomizedSearchCV( clf, param_distributions=param_distributions,
+                   n_iter=N_ITERATION,               # Number of random parameter combinations to try
+                   cv=CV_VALUE,                    # 3-fold CV (faster than 5-fold)
+                   scoring='accuracy',
+                   random_state=RANDOM_STATE
+                   )
+        
+        # Fit the model
+        random_search.fit(x_train, y_train)
+
+        # Get the best cross-validation score
+        best_score = random_search.best_score_
+
+        # Get the best combination of hyperparameters
+        best_params = random_search.best_params_
+        
+        print('Best Accuracy:', best_score)
+        print('Best Params:', best_params)
+        
+        # Predict the labels for the test data after fit using x_train
+        model = RandomForestClassifier(n_estimators= best_params['n_estimators']
+                                      ,max_depth= best_params['max_depth']
+                                      ,min_samples_split= best_params['min_samples_split']
+                                      ,max_features = best_params['max_features']
+                                      ,random_state=RANDOM_STATE)
+        model.fit(x_train, y_train)
+        
+        y_pred = model.predict(x_test)
+        accuracy_test = accuracy_score(y_test , y_pred)
+
+        # Compute additional metrics like Precision , recall , F!-score , and ROC AUC
+        precision = precision_score(y_test, y_pred , zero_division = 0)
+        recall = recall_score(y_test , y_pred , zero_division = 0)
+        f1 = f1_score(y_test , y_pred, zero_division = 0)
+        roc_auc = roc_auc_score(y_test , model.predict_proba(x_test)[:, 1])
+
+        # Create a metrics DataFrame
+        df_metrics = {
+            'Test Accuracy': accuracy_test,
+            'Precision': precision,
+            'Recall': recall,
+            'F1-Score': f1,
+            'ROC AUC': roc_auc
+        }
+        
+        # Create a estimator Dataframe
+        df_estimator = pd.DataFrame({
+            'Estimator': [model_yaml['estimator']],
+            'n_estimators': [best_params['n_estimators']],
+            'min_samples_split': [best_params['min_samples_split']],
+            'max_features': [best_params['max_features']]
+        })
+        
+        create_final_model_yaml(model_yaml, best_params, round(accuracy_test,5))
+        print(df_estimator)
+        return model, df_metrics
+    except Exception as e:
+        logging.error('Failed to complete getting model info and report process: %s', e)
+        print(f"Error: {e}")
+        raise
+        
+def save_model_artifact(run_id: str, test: np.array, model_path: str, model: object, metric_path: str, info_path: str, metric: dict) -> None:
+    """Save the model run ID and path to a JSON file."""
+    try:
+        # Check if the model's accuracy meets the expected threshold
+        if accuracy_score(test[:, -1], model.predict(test[:, :-1])) < EXPECTED_ACCURACY:
+            logging.info("No model found with score above the base score")
+            raise Exception("No model found with score above the base score")
+
+        # Save the final model object that includes both preprocessing and the trained model
+        logging.info("Saving model as performace is better than previous one.")
+        #my_model = MyModel(preprocessing_object=preprocessing_obj, trained_model_object=trained_model)
+        save_object(model_path, model)
+        # save the metrics of the run
+        
+        save_metrics(metric, metric_path)
+        # Log metrics to MLflow
+        for metric_name, metric_value in metric.items():
+            mlflow.log_metric(metric_name, metric_value)
+        
+        # Log model parameters to MLflow
+        if hasattr(model, 'get_params'):
+            params = model.get_params()
+            for param_name, param_value in params.items():
+                mlflow.log_param(param_name, param_value)  
+
+        # Log model to MLflow
+        mlflow.sklearn.log_model(model, "model")
+
+        # Save model info
+        save_model_info(run_id, "model", info_path)
+
+        # Log the metrics file to MLflow
+        mlflow.log_artifact(metric_path)   
+    except Exception as e:
+        logging.error('Error occurred while saving the model info: %s', e)
+        raise
+        
 def main():
     logging.info("Entered initiate_model_trainer method")
     """
@@ -230,81 +344,40 @@ def main():
     On Failure  :   Write an exception log and then raise an exception
     """
     mlflow.set_experiment(MLFLOW_EXP_NAME)
-    with mlflow.start_run() as run:  # Start an MLflow run
-        try:
-            print("------------------------------------------------------------------------------------------------")
-            print("Starting Model Trainer Component")
-            # Load transformed train and test data
-            train_arr = load_numpy_array_data(file_path=os.path.join(DATA_PATH, PROCESSED_OBJECT_DIR,TRAIN_ARRAYNAME))
-            test_arr = load_numpy_array_data(file_path=os.path.join(DATA_PATH, PROCESSED_OBJECT_DIR,TEST_ARRAYNAME))
-            logging.info("train-test data loaded")
+    
+    try:
+        print("------------------------------------------------------------------------------------------------")
+        print("Starting Model Trainer Component")
+        # Load transformed train and test data
+        train_arr = load_numpy_array_data(file_path=os.path.join(DATA_PATH, PROCESSED_OBJECT_DIR,TRAIN_ARRAYNAME))
+        test_arr = load_numpy_array_data(file_path=os.path.join(DATA_PATH, PROCESSED_OBJECT_DIR,TEST_ARRAYNAME))
+        logging.info("train-test data loaded")
 
-            # getting the models from model.yaml
-            model_config = load_params(params_path=MODEL_CONFIG_PATH)
-            for each in model_config['models']:
-                model_name = each['name']
+        # getting the models from model.yaml
+        model_config = load_params(params_path=MODEL_CONFIG_PATH)
+        for each in model_config['models']:
+            model_name = each['name']
+            # Gradient Boosting Classifier
+            with mlflow.start_run() as run:  # Start an MLflow run
                 if model_name == GDB_ESTIMATOR:
-                    print('Values for GDB are ',each)
                     gdb_model,gdb_metrics = get_model_and_report_gdb(model_yaml=each, train=train_arr, test=test_arr)
-                    # Check if the model's accuracy meets the expected threshold
-                    if accuracy_score(test_arr[:, -1], gdb_model.predict(test_arr[:, :-1])) < EXPECTED_ACCURACY:
-                        logging.info("No model found with score above the base score")
-                        raise Exception("No model found with score above the base score")
-
-                    # Save the final model object that includes both preprocessing and the trained model
-                    logging.info("Saving new model as performace is better than previous one.")
-                    #my_model = MyModel(preprocessing_object=preprocessing_obj, trained_model_object=trained_model)
-                    save_object(GDB_MODEL_PATH, gdb_model)
-                    # save the metrics of the run
-                    
-                    save_metrics(gdb_metrics, GDB_METRICS_PATH)
-                    # Log metrics to MLflow
-                    for metric_name, metric_value in gdb_metrics.items():
-                        mlflow.log_metric(metric_name, metric_value)
-                    
-                    # Log model parameters to MLflow
-                    if hasattr(gdb_model, 'get_params'):
-                        params = gdb_model.get_params()
-                        print("Value of params are ",params)
-                        print("Value of params items are ",params.items())
-                        for param_name, param_value in params.items():
-                            mlflow.log_param(param_name, param_value)  
-
-                    # Log model to MLflow
-                    mlflow.sklearn.log_model(gdb_model, "model")
-            
-                    # Save model info
-                    save_model_info(run.info.run_id, "model", GDB_INFO_PATH)
-            
-                    # Log the metrics file to MLflow
-                    mlflow.log_artifact(GDB_METRICS_PATH)                            
-                   
-            # Train model and get metrics
-            #get_model_object_and_report(train=train_arr, test=test_arr)
-            logging.info("Model object and artifact loaded.")
-            
-            # Load preprocessing object
-            #preprocessing_obj = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
-            #logging.info("Preprocessing obj loaded.")
-
-            
-            # saving the model to a new path
-            #if os.path.exists(self.model_pusher_config.model_final_dir) and os.path.isfile(self.model_pusher_config.model_final_dir):
-            #    logging.info("Prod file existing")
-            #else:
-            #    save_object(self.model_pusher_config.model_final_dir, my_model)
-            #    logging.info("Saved final model object that includes both preprocessing and the trained model")
-
-            # Create and return the ModelTrainerArtifact
-            #model_trainer_artifact = ModelTrainerArtifact(
-            #    trained_model_file_path=self.model_trainer_config.trained_model_file_path,
-            #    metric_artifact=metric_artifact,
-            #)
-            #logging.info(f"Model trainer artifact: {model_trainer_artifact}")
+                    save_model_artifact(run.info.run_id, test_arr, GDB_MODEL_PATH, gdb_model, GDB_METRICS_PATH, GDB_INFO_PATH, gdb_metrics)
+                # Random Forest Classifier
+                elif model_name == RFC_ESTIMATOR:
+                    rfc_model,rfc_metrics = get_model_and_report_rfc(model_yaml=each, train=train_arr, test=test_arr)
+                    save_model_artifact(run.info.run_id, test_arr, RFC_MODEL_PATH, rfc_model, RFC_METRICS_PATH, RFC_INFO_PATH, rfc_metrics)               
+        # Train model and get metrics
+        #get_model_object_and_report(train=train_arr, test=test_arr)
+        logging.info("Model object and artifact loaded.")
         
-        except Exception as e:
-            logging.error('Failed to complete the model training process: %s', e)
-            print(f"Error: {e}")
+        # Load preprocessing object
+        #preprocessing_obj = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
+        #logging.info("Preprocessing obj loaded.")
+
+        
+    except Exception as e:
+        logging.error('Failed to complete the model training process: %s', e)
+        print(f"Error: {e}")
             
 if __name__ == '__main__':
     main()

@@ -1,6 +1,13 @@
-- null
 - accuracy: 0.95494
+  best parameters:
+    learning_rate: 0.2
+    max_depth: 9
+    n_estimators: 200
   estimator: GradientBoostingClassifier
-  learning_rate: 0.2
-  max_depth: 9
-  n_estimators: 200
+- accuracy: 0.956
+  best parameters:
+    max_depth: 9
+    max_features: sqrt
+    min_samples_split: 9
+    n_estimators: 300
+  estimator: RandomForestClassifier

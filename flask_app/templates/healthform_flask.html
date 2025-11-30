@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Risk Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 12px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+            font-size: 15px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .positive {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .negative {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Health Risk Prediction</h1>
+
+        <form action="/predict" method="POST">
+
+            <label>Do you have High BP?(0: No, 1: Yes):</label>
+            <input type="number" name="High_BP" min="0" max="1" required>
+
+            <label>Do you have High Cholesterol?(0: No, 1: Yes):</label>
+            <input type="number" name="High_Cholesterol" min="0" max="1" required>
+
+            <label>Have you checked Cholesterol within 5 years?(0: No, 1: Yes)</label>
+            <input type="number" name="Cholesterol_Checked" min="0" max="1" required>
+
+            <label>Body Mass Index:</label>
+            <input type="number" step="0.1" name="BMI" required>
+
+            <label>Have you smoked atleast 100 cigarettes? (0: No, 1: Yes)</label>
+            <input type="number" name="Smoker" min="0" max="1" required>
+
+            <label>Did you have Stroke? (0: No, 1: Yes)</label>
+            <input type="number" name="Had_Stroke" min="0" max="1" required>
+
+            <label>Heart Disease / Heart Attack (0: No, 1: Yes):</label>
+            <input type="number" name="Heart_Disease" min="0" max="1" required>
+
+            <label>Have you done physical activities in the past 30 days? (0: No, 1: Yes)</label>
+            <input type="number" name="Physical_Activity" min="0" max="1" required>
+
+            <label>Consume Fruits daily? (0: No, 1: Yes)</label>
+            <input type="number" name="Consume_Fruits" min="0" max="1" required>
+
+            <label>Consume Veggies daily? (0: No, 1: Yes)</label>
+            <input type="number" name="Consume_Veggies" min="0" max="1" required>
+
+            <label>Do you drink heavily (daily or 14 drink in a week)? (0: No, 1: Yes)</label>
+            <input type="number" name="Drink_Heavily" min="0" max="1" required>
+
+            <label>Do you have any kind of health care coverage? (0: No, 1: Yes)</label>
+            <input type="number" name="Subscribe_Healthcare" step="1" min="0" max="1" required>
+
+            <label>Any case in one year no doctor visit due to cost?: (0: No, 1: Yes)</label>
+            <input type="number" name="NoDocbcCost" min="0" max="1" required>
+
+            <label>Is your Health generally good? </label>
+            <input type="number" name="General_Health" step="1" min="0" max="5" required>
+
+            <label>How many days during the past 30 days was your mental health not good? </label>
+            <input type="number" name="Mental_Health" min="0" max="30" required>
+
+            <label>How many days during the past 30 days was your physical health not good? </label>
+            <input type="number" name="Physical_Health" min="0" max="30" required>
+
+            <label>Difficulty Walking or Climbing stairs? (0: No, 1: Yes)</label>
+            <input type="number" name="Difficulty_Walking" min="0" max="1" required>
+
+            <label>Sex (1: Male, 0: Female):</label>
+            <input type="number" name="Sex" min="0" max="1" required>
+
+            <label>Age (1 for 18-24,2 for 25-30, then increments of 5):</label>
+            <input type="number" name="Age" min="1" max="13" required>
+
+            <label>Education :</label>
+            <select name="Education">
+                <option value="">-- Select --</option>
+                <option value=0>No School</option>
+                <option value=1>Kindergarten</option>
+                <option value=2>Nursery</option>
+                <option value=3>Primary</option>
+				<option value=4>Secondary</option>
+				<option value=5>High School</option>
+				<option value=6>College</option>
+            </select>
+
+            <label>Income:</label>
+            <select name="Income">
+                <option value="">-- Select --</option>
+                <option value=1>less than 10000</option>
+                <option value=2>between 10000  and 20000</option>
+                <option value=3>between 20000  and 30000</option>
+				<option value=4>between 30000  and 40000</option>
+				<option value=5>between 40000  and 50000</option>
+				<option value=6>between 50000  and 60000</option>
+				<option value=7>between 60000  and 70000</option>
+                <option value=8>more than 70000</option>
+            </select>
+
+            <label>Machine Learning Estimator:</label>
+            <select name="Estimator" required>
+			    {% for c in estimators %}
+				<option value="{{ c }}">{{ c }}</option>
+				{% endfor %}
+            </select>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if result is not none %}
+        <div class="result {% if result == 1 %}positive{% else %}negative{% endif %}">
+            {% if result == 1 %}
+                ⚠️ Diabetic
+            {% else %}
+                😊 Not Diabetic
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

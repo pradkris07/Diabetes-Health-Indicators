@@ -55,6 +55,11 @@ EXPECTED_ACCURACY = 0.9
 # Model names
 MODEL_FINAL_CONFIG_PATH = os.path.join("models", "final.yaml")
 GDB_ESTIMATOR = 'Gradient Boosting'
-GDB_MODEL_PATH = os.path.join("models", "GDB.pkl")
+GDB_MODEL_PATH = os.path.join("models", "GDB_model.pkl")
 GDB_METRICS_PATH = os.path.join("reports", "GradientBoostingMetrics.json")
 GDB_INFO_PATH = os.path.join("reports", "GradientBoostingExpInfo.json")
+#
+RFC_ESTIMATOR = 'Random Forest'
+RFC_MODEL_PATH = os.path.join("models", "RFC_model.pkl")
+RFC_METRICS_PATH = os.path.join("reports", "RandomForestMetrics.json")
+RFC_INFO_PATH = os.path.join("reports", "RandomForestExpInfo.json")

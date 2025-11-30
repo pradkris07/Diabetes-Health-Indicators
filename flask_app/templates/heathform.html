@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Health Risk Prediction</title>
+    <!-- keep same CSS path as your template so appearance matches -->
+    <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Health Risk Prediction</h1>
+
+        {% if context %}
+            <div class="result">
+                <h2>Result: {{ context }}</h2>
+            </div>
+        {% endif %}
+
+        <form method="post" action="/">
+            <!-- Binary questions use number inputs 0/1 to match original styling -->
+            <label for="High_BP">High BP (0: No, 1: Yes):</label>
+            <input type="number" id="High_BP" name="High_BP" min="0" max="1" required>
+
+            <label for="High_Cholesterol">High Cholesterol (0: No, 1: Yes):</label>
+            <input type="number" id="High_Cholesterol" name="High_Cholesterol" min="0" max="1" required>
+
+            <label for="Cholesterol_Checked">Cholesterol Checked? (0: No, 1: Yes):</label>
+            <input type="number" id="Cholesterol_Checked" name="Cholesterol_Checked" min="0" max="1" required>
+
+            <label for="BMI">BMI (e.g., 24.5):</label>
+            <input type="number" step="0.1" id="BMI" name="BMI" required>
+
+            <label for="Smoker">Are you a Smoker? (0: No, 1: Yes):</label>
+            <input type="number" id="Smoker" name="Smoker" min="0" max="1" required>
+
+            <label for="Had_Stroke">Did you have a Stroke? (0: No, 1: Yes):</label>
+            <input type="number" id="Had_Stroke" name="Had_Stroke" min="0" max="1" required>
+
+            <label for="Heart_Disease">Do you have any Heart Disease / Attack? (0: No, 1: Yes):</label>
+            <input type="number" id="Heart_Disease" name="Heart_Disease" min="0" max="1" required>
+
+            <label for="Physical_Activity">Do you indulge in physical activities? (0: No, 1: Yes):</label>
+            <input type="number" id="Physical_Activity" name="Physical_Activity" min="0" max="1" required>
+
+            <label for="Consume_Fruits">Do you consume Fruits? (0: No, 1: Yes):</label>
+            <input type="number" id="Consume_Fruits" name="Consume_Fruits" min="0" max="1" required>
+
+            <label for="Consume_Veggies">Do you consume Veggies? (0: No, 1: Yes):</label>
+            <input type="number" id="Consume_Veggies" name="Consume_Veggies" min="0" max="1" required>
+
+            <label for="Drink_Heavily">Do you drink heavily? (0: No, 1: Yes):</label>
+            <input type="number" id="Drink_Heavily" name="Drink_Heavily" min="0" max="1" required>
+
+            <label for="Subscribe_Healthcare">Do you subscribe to any health care? (0: No, 1: Yes):</label>
+            <input type="number" id="Subscribe_Healthcare" name="Subscribe_Healthcare" min="0" max="1" required>
+
+            <label for="NoDocbcCost">NoDocbcCost (number):</label>
+            <input type="number" step="0.01" id="NoDocbcCost" name="NoDocbcCost" required>
+
+            <label for="General_Health">Do you have good General health? (0: No, 1: Yes):</label>
+            <input type="number" id="General_Health" name="General_Health" min="0" max="1" required>
+
+            <label for="Mental_Health">Do you have good Mental health? (0: No, 1: Yes):</label>
+            <input type="number" id="Mental_Health" name="Mental_Health" min="0" max="1" required>
+
+            <label for="Physical_Health">Do you have good Physical health? (0: No, 1: Yes):</label>
+            <input type="number" id="Physical_Health" name="Physical_Health" min="0" max="1" required>
+
+            <label for="Difficulty_Walking">Do you have difficulty walking? (0: No, 1: Yes):</label>
+            <input type="number" id="Difficulty_Walking" name="Difficulty_Walking" min="0" max="1" required>
+
+            <label for="Sex">Sex (1: Male, 0: Female):</label>
+            <input type="number" id="Sex" name="Sex" min="0" max="1" required>
+
+            <label for="Age">Age:</label>
+            <input type="number" id="Age" name="Age" required>
+
+            <label for="Education">Education (choose):</label>
+            <select id="Education" name="Education" required>
+                <option value="">-- select --</option>
+                <option value="no_school">No schooling</option>
+                <option value="primary">Primary</option>
+                <option value="secondary">Secondary</option>
+                <option value="higher">Higher</option>
+            </select>
+
+            <label for="Income">Income (annual or monthly - numeric):</label>
+            <input type="number" step="0.01" id="Income" name="Income" required>
+
+            <label for="Estimator">Machine Learning estimator to use?</label>
+            <select id="Estimator" name="Estimator" required>
+                <option value="">-- choose estimator --</option>
+                <option value="logistic_regression">Logistic Regression</option>
+                <option value="random_forest">Random Forest</option>
+                <option value="xgboost">XGBoost</option>
+                <option value="svm">SVM</option>
+                <option value="knn">K-Nearest Neighbors</option>
+            </select>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <form method="get" action="/train">
+            <button type="submit" class="train-button">Train Model</button>
+        </form>
+    </div>
+</body>
+</html>

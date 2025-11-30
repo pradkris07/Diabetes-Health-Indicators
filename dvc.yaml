@@ -27,3 +27,12 @@ stages:
     cmd: python src/model/model_trainer.py
     deps:
     - src/model/model_trainer.py
+    outs:
+    - reports
+    
+  model_registering:
+    cmd: python src/model/register_model.py
+    deps:
+    - src/model/register_model.py
+    
+

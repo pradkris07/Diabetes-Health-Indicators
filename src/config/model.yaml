@@ -25,4 +25,33 @@ models:
         - 0.1
         - 0.2
         - 1
-      
+  - name: Random Forest
+    estimator: RandomForestClassifier
+    parameters:
+     - n_estimators
+     - max_depth
+     - min_samples_split
+     - max_features
+    hyperparameter:
+      n_estimators: 
+        - 50
+        - 100
+        - 150
+        - 200
+        - 300
+        - 400
+        - 500
+      max_depth: 
+        - 3
+        - 5
+        - 7
+        - 9
+      min_samples_split:
+        - 3
+        - 5
+        - 7
+        - 9
+      max_features:
+      - 'sqrt'
+      - 'log2'
+      - 

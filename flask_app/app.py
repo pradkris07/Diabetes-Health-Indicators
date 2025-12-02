@@ -117,6 +117,24 @@ def predict():
         model_uri = f'models:/{model_mlflow_name}/{model_version}'
         model = mlflow.pyfunc.load_model(model_uri)
         #model= pickle.load(open(RFC_MODEL_PATH, 'rb'))
+    elif model_name == 'K Nearest Neighbour':
+        model_mlflow_name = KNN_MODEL_PATH.split('\\')[1].split('.')[0]
+        model_version = get_latest_model_version(model_mlflow_name)
+        model_uri = f'models:/{model_mlflow_name}/{model_version}'
+        model = mlflow.pyfunc.load_model(model_uri)
+        #model= pickle.load(open(RFC_MODEL_PATH, 'rb'))
+    elif model_name == 'Support Vectors Classifier':
+        model_mlflow_name = SVC_MODEL_PATH.split('\\')[1].split('.')[0]
+        model_version = get_latest_model_version(model_mlflow_name)
+        model_uri = f'models:/{model_mlflow_name}/{model_version}'
+        model = mlflow.pyfunc.load_model(model_uri)
+        #model= pickle.load(open(RFC_MODEL_PATH, 'rb'))
+    elif model_name == 'Gaussian NB Classifier':
+        model_mlflow_name = GNB_MODEL_PATH.split('\\')[1].split('.')[0]
+        model_version = get_latest_model_version(model_mlflow_name)
+        model_uri = f'models:/{model_mlflow_name}/{model_version}'
+        model = mlflow.pyfunc.load_model(model_uri)
+        #model= pickle.load(open(RFC_MODEL_PATH, 'rb'))
     y_pred = model.predict(transformed_df)
     prediction = y_pred[0]
     

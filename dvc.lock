@@ -49,18 +49,18 @@ stages:
     deps:
     - path: src/model/model_trainer.py
       hash: md5
-      md5: 62f28f1f0698197dbebeda8addaf35cc
-      size: 16899
+      md5: 620c47518aa7b6ceb1e1a5c398462e97
+      size: 28076
     outs:
     - path: reports
       hash: md5
-      md5: 1d1013f5d5add81288f6402171b1d14e.dir
-      size: 544
-      nfiles: 4
+      md5: 4c35bc1c9a859582d92decbe43fc7353.dir
+      size: 1326
+      nfiles: 10
   model_registering:
     cmd: python src/model/register_model.py
     deps:
     - path: src/model/register_model.py
       hash: md5
-      md5: 3929023aaf8811ee51f2699542c1694c
-      size: 3987
+      md5: c9e189b5e155180f6d795842adc247f9
+      size: 4994

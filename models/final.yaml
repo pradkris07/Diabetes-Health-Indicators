@@ -11,3 +11,19 @@
     min_samples_split: 9
     n_estimators: 300
   estimator: RandomForestClassifier
+- accuracy: 0.95328
+  best parameters:
+    metric: manhattan
+    n_neighbors: 13
+    weights: distance
+  estimator: KNeighborsClassifier
+- accuracy: 0.93196
+  best parameters:
+    var_smoothing: 0.01
+  estimator: GaussianNB
+- accuracy: 0.95797
+  best parameters:
+    C: 1
+    gamma: 1
+    kernel: linear
+  estimator: SVC

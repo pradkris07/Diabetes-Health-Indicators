@@ -63,3 +63,18 @@ RFC_ESTIMATOR = 'Random Forest'
 RFC_MODEL_PATH = os.path.join("models", "RFC_model.pkl")
 RFC_METRICS_PATH = os.path.join("reports", "RandomForestMetrics.json")
 RFC_INFO_PATH = os.path.join("reports", "RandomForestExpInfo.json")
+#
+KNN_ESTIMATOR = 'K Nearest Neighbour'
+KNN_MODEL_PATH = os.path.join("models", "KNN_model.pkl")
+KNN_METRICS_PATH = os.path.join("reports", "KNNeighboursMetrics.json")
+KNN_INFO_PATH = os.path.join("reports", "KNNeighboursExpInfo.json")
+#
+SVC_ESTIMATOR = 'Support Vectors Classifier'
+SVC_MODEL_PATH = os.path.join("models", "SVC_model.pkl")
+SVC_METRICS_PATH = os.path.join("reports", "SVCMetrics.json")
+SVC_INFO_PATH = os.path.join("reports", "SVCExpInfo.json")
+#
+GNB_ESTIMATOR = 'Gaussian NB Classifier'
+GNB_MODEL_PATH = os.path.join("models", "GNB_model.pkl")
+GNB_METRICS_PATH = os.path.join("reports", "GaussianNBMetrics.json")
+GNB_INFO_PATH = os.path.join("reports", "GaussianNBExpInfo.json")

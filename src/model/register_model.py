@@ -100,7 +100,26 @@ def main():
             elif model_name == RFC_ESTIMATOR:
                 model_info_path = RFC_INFO_PATH
                 model_info = load_model_info(model_info_path)
+                print(model_info)
                 model_name = RFC_MODEL_PATH.split('\\')[1].split('.')[0]
+                register_model(model_name, model_info)
+            elif model_name == KNN_ESTIMATOR:
+                model_info_path = KNN_INFO_PATH
+                model_info = load_model_info(model_info_path)
+                print(model_info)
+                model_name = KNN_MODEL_PATH.split('\\')[1].split('.')[0]
+                register_model(model_name, model_info)
+            elif model_name == SVC_ESTIMATOR:
+                model_info_path = SVC_INFO_PATH
+                model_info = load_model_info(model_info_path)
+                print(model_info)
+                model_name = SVC_MODEL_PATH.split('\\')[1].split('.')[0]
+                register_model(model_name, model_info)
+            elif model_name == GNB_ESTIMATOR:
+                model_info_path = GNB_INFO_PATH
+                model_info = load_model_info(model_info_path)
+                print(model_info)
+                model_name = GNB_MODEL_PATH.split('\\')[1].split('.')[0]
                 register_model(model_name, model_info)
     except Exception as e:
         logging.error('Failed to complete the model registration process: %s', e)

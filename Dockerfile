@@ -21,11 +21,14 @@ RUN pip install --no-cache-dir uv
 
 # Set workdir and copy app from build stage
 WORKDIR /app
+COPY --from=build /app /app
 
 # Copy the actual source code
-COPY flask_app/ /app/
-COPY models/final.yaml /app/models/final.yaml
-COPY models/preprocessing.pkl /app/models/preprocessing.pkl
+#COPY flask_app/ /app/
+#COPY models/final.yaml /app/models/final.yaml
+#COPY models/preprocessing.pkl /app/models/preprocessing.
+
+COPY . /app
 
 # Expose Flask port
 EXPOSE 10000

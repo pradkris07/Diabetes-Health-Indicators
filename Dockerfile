@@ -21,7 +21,6 @@ RUN pip install --no-cache-dir uv
 
 # Set workdir and copy app from build stage
 WORKDIR /app
-COPY --from=build /app /app
 
 # Copy the actual source code
 COPY flask_app/ /app/

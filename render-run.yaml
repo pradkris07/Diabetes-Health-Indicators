@@ -1,0 +1,11 @@
+# name: As per Chatgpt
+
+services:
+  - type: web
+    name: python-docker-service
+    env: docker
+    repo: https://github.com/pradkris07/Diabetes-Health-Indicators.git
+    branch: main
+    region: oregon
+    plan: free
+    autoDeploy: false
